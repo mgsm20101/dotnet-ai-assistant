@@ -1,0 +1,32 @@
+[
+  {
+    "id": "factual-1",
+    "question": "كم يوم إجازة سنوية أستحق؟",
+    "expectedIntent": "factual",
+    "answerContains": ["21", "إجازة"]
+  },
+  {
+    "id": "factual-2",
+    "question": "هل مسموح بالعمل عن بُعد؟",
+    "expectedIntent": "factual",
+    "answerContains": ["يومين", "بُعد"]
+  },
+  {
+    "id": "factual-3",
+    "question": "ما هو الحد الأقصى للإجازة المرضية المدفوعة؟",
+    "expectedIntent": "factual",
+    "answerContains": ["30"]
+  },
+  {
+    "id": "calculation-1",
+    "question": "كم يساوي 15% من 3200؟",
+    "expectedIntent": "calculation",
+    "answerContains": ["480"]
+  },
+  {
+    "id": "calculation-2",
+    "question": "ما ناتج 144 قسمة 12؟",
+    "expectedIntent": "calculation",
+    "answerContains": ["12"]
+  }
+]
