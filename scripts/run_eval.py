@@ -11,6 +11,7 @@ from __future__ import annotations
 import argparse
 import datetime as dt
 import json
+import re
 import subprocess
 import sys
 import tempfile
@@ -21,6 +22,9 @@ ROOT = Path(__file__).resolve().parent.parent
 EVAL_PROJECT = ROOT / "tests" / "AiAssistant.Eval" / "AiAssistant.Eval.csproj"
 SETTINGS = ROOT / "src" / "AiAssistant.API" / "appsettings.json"
 TRX_NS = {"t": "http://microsoft.com/schemas/VisualStudio/TeamTest/2010"}
+# Test names embed the Arabic question, which the test host can mis-encode on
+# Windows; the case id and the method name are ASCII and identify the row.
+CASE_ID = re.compile(r"Id = ([\w.-]+)")
 
 
 def git_state(root: Path = ROOT) -> tuple[str, bool]:
@@ -44,16 +48,19 @@ def check_provenance(allow_dirty: bool, root: Path = ROOT) -> tuple[str, bool]:
 
 
 def parse_trx(path: Path) -> list[dict]:
-    """One row per executed test: name, outcome, duration in seconds."""
+    """One row per executed test: case id, check, outcome, duration in seconds."""
     rows = []
     for r in ET.parse(path).getroot().iterfind(".//t:UnitTestResult", TRX_NS):
         h, m, s = r.get("duration", "0:0:0").split(":")
+        name = r.get("testName", "")
+        case = CASE_ID.search(name)
         rows.append({
-            "test": r.get("testName"),
+            "case": case.group(1) if case else None,
+            "check": name.split("(", 1)[0].rsplit(".", 1)[-1],
             "outcome": r.get("outcome"),
             "seconds": round(int(h) * 3600 + int(m) * 60 + float(s), 3),
         })
-    return sorted(rows, key=lambda row: row["test"])
+    return sorted(rows, key=lambda row: (row["case"] or "", row["check"]))
 
 
 def summarise(rows: list[dict]) -> dict:

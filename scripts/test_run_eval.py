@@ -8,8 +8,8 @@ import run_eval
 TRX = """<?xml version="1.0" encoding="utf-8"?>
 <TestRun xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
   <Results>
-    <UnitTestResult testName="Ask_ReturnsExpectedIntent(factual-1)" outcome="Passed" duration="00:00:12.5000000" />
-    <UnitTestResult testName="Ask_AnswerContainsExpectedContent(factual-2)" outcome="Failed" duration="00:01:02.2500000" />
+    <UnitTestResult testName="AiAssistant.Eval.EvalTests.Ask_ReturnsExpectedIntent(evalCase: EvalCase { Id = factual-1, Question = كم })" outcome="Passed" duration="00:00:12.5000000" />
+    <UnitTestResult testName="AiAssistant.Eval.EvalTests.Ask_AnswerContainsExpectedContent(evalCase: EvalCase { Id = factual-2, Question = ??? })" outcome="Failed" duration="00:01:02.2500000" />
   </Results>
 </TestRun>
 """
@@ -22,8 +22,8 @@ def test_parse_trx_reads_every_result_with_its_duration(tmp_path: Path):
     rows = run_eval.parse_trx(trx)
 
     assert rows == [
-        {"test": "Ask_AnswerContainsExpectedContent(factual-2)", "outcome": "Failed", "seconds": 62.25},
-        {"test": "Ask_ReturnsExpectedIntent(factual-1)", "outcome": "Passed", "seconds": 12.5},
+        {"case": "factual-1", "check": "Ask_ReturnsExpectedIntent", "outcome": "Passed", "seconds": 12.5},
+        {"case": "factual-2", "check": "Ask_AnswerContainsExpectedContent", "outcome": "Failed", "seconds": 62.25},
     ]
 
 
