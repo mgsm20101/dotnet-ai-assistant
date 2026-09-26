@@ -20,8 +20,6 @@ public sealed class AskHandler(
     ILogger<AskHandler> logger)
     : IRequestHandler<AskCommand, AskResult>
 {
-    private const int MaxIterations = 3;
-
     public async Task<AskResult> Handle(AskCommand request, CancellationToken ct)
     {
         var sw = Stopwatch.StartNew();
