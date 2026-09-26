@@ -7,9 +7,8 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// Application layer — MediatR scans the assembly containing AskHandler
-builder.Services.AddMediatR(cfg =>
-    cfg.RegisterServicesFromAssemblyContaining<AskHandler>());
+// Application layer — the one use case, injected straight into AskController
+builder.Services.AddScoped<AskHandler>();
 
 // Infrastructure layer — Ollama + InMemoryKnowledgeStore
 builder.Services.AddInfrastructure(builder.Configuration);

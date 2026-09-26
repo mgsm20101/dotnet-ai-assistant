@@ -19,7 +19,7 @@ public sealed class AskHandlerTests
         var llm = new ScriptedLanguageModel("factual", "  21 يوماً  ");
         var store = new FixedKnowledgeStore(Leave, Remote);
 
-        var result = await Handler(llm, store).Handle(new AskCommand("كم يوم إجازة؟"), default);
+        var result = await Handler(llm, store).Handle(new AskRequest("كم يوم إجازة؟"), default);
 
         Assert.Equal("factual", result.Intent);
         Assert.Equal("21 يوماً", result.Answer);
@@ -38,7 +38,7 @@ public sealed class AskHandlerTests
         var llm = new ScriptedLanguageModel("calculation", "480");
         var store = new FixedKnowledgeStore(Leave);
 
-        var result = await Handler(llm, store).Handle(new AskCommand("15% من 3200؟"), default);
+        var result = await Handler(llm, store).Handle(new AskRequest("15% من 3200؟"), default);
 
         Assert.Equal("calculation", result.Intent);
         Assert.Equal("480", result.Answer);
@@ -53,7 +53,7 @@ public sealed class AskHandlerTests
         var llm = new ScriptedLanguageModel("I think it is factual.", "answer");
         var store = new FixedKnowledgeStore(Leave);
 
-        var result = await Handler(llm, store).Handle(new AskCommand("q"), default);
+        var result = await Handler(llm, store).Handle(new AskRequest("q"), default);
 
         Assert.Equal("unknown", result.Intent);
         Assert.Empty(store.Queries);
@@ -64,7 +64,7 @@ public sealed class AskHandlerTests
     {
         var llm = new ScriptedLanguageModel("  Factual\n", "a");
 
-        var result = await Handler(llm, new FixedKnowledgeStore(Leave)).Handle(new AskCommand("q"), default);
+        var result = await Handler(llm, new FixedKnowledgeStore(Leave)).Handle(new AskRequest("q"), default);
 
         Assert.Equal("factual", result.Intent);
     }
@@ -74,7 +74,7 @@ public sealed class AskHandlerTests
     {
         var llm = new ScriptedLanguageModel("calculation", "12");
 
-        await Handler(llm, new FixedKnowledgeStore()).Handle(new AskCommand("144 / 12"), default);
+        await Handler(llm, new FixedKnowledgeStore()).Handle(new AskRequest("144 / 12"), default);
 
         var classify = llm.Calls[0];
         Assert.Equal(2, llm.Calls.Count);
@@ -86,7 +86,7 @@ public sealed class AskHandlerTests
     public async Task Result_ReportsASingleAnswerIteration()
     {
         var result = await Handler(new ScriptedLanguageModel("calculation", "1"), new FixedKnowledgeStore())
-            .Handle(new AskCommand("q"), default);
+            .Handle(new AskRequest("q"), default);
 
         Assert.Equal("answer", result.StoppedBy);
         Assert.Equal(1, result.Iterations);

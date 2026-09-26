@@ -1,12 +1,11 @@
 using AiAssistant.Application.Features.Ask;
-using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AiAssistant.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public sealed class AskController(IMediator mediator) : ControllerBase
+public sealed class AskController(AskHandler handler) : ControllerBase
 {
     /// <summary>Ask a question — routed to RAG or LLM based on intent.</summary>
     [HttpPost]
@@ -19,9 +18,7 @@ public sealed class AskController(IMediator mediator) : ControllerBase
         if (string.IsNullOrWhiteSpace(request.Question))
             return BadRequest(new { error = "Question is required." });
 
-        var result = await mediator.Send(new AskCommand(request.Question), ct);
+        var result = await handler.Handle(request, ct);
         return Ok(result);
     }
 }
-
-public sealed record AskRequest(string Question);

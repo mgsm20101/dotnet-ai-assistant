@@ -2,7 +2,6 @@ using System.Diagnostics;
 using System.Text;
 using AiAssistant.Application.Contracts;
 using AiAssistant.Domain.ValueObjects;
-using MediatR;
 using Microsoft.Extensions.Logging;
 
 namespace AiAssistant.Application.Features.Ask;
@@ -18,9 +17,8 @@ public sealed class AskHandler(
     ILanguageModel llm,
     IKnowledgeStore knowledge,
     ILogger<AskHandler> logger)
-    : IRequestHandler<AskCommand, AskResult>
 {
-    public async Task<AskResult> Handle(AskCommand request, CancellationToken ct)
+    public async Task<AskResult> Handle(AskRequest request, CancellationToken ct)
     {
         var sw = Stopwatch.StartNew();
         var intent = await ClassifyIntentAsync(request.Question, ct);
