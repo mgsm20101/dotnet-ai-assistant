@@ -3,7 +3,7 @@
 ## What this project shows
 
 How an LLM feature fits inside an ordinary .NET backend: the model and the
-knowledge store are ports, the pipeline is one MediatR handler, and the whole
+knowledge store are ports, the pipeline is one handler class, and the whole
 thing is testable at two speeds — without the model in CI, with it locally.
 
 ## Architecture decisions
@@ -14,7 +14,6 @@ Domain → Application → Infrastructure → API.
 
 - **Domain** has zero dependencies. QueryIntent is a value object (not an enum) because
   it needs parse/factory behaviour without switching on strings throughout the codebase.
-  Result<T> is in Application because it's a cross-cutting contract, not a domain concept.
 
 - **Application** defines interfaces (ILanguageModel, IKnowledgeStore) — these are
   *ports* in hexagonal architecture terms. Infrastructure provides the *adapters*.
@@ -23,10 +22,11 @@ Domain → Application → Infrastructure → API.
 - **Infrastructure** contains all I/O: HTTP calls to Ollama, the in-memory knowledge store.
   The DI extension method `AddInfrastructure()` is the only place that knows concrete types.
 
-### CQRS with MediatR
+### One handler, called directly
 
-A single AskCommand flows through MediatR to AskHandler. No direct controller→service
-coupling. Adding a new command (SummarizeCommand, TranslateCommand) is one handler file.
+There is one use case, so AskController receives AskHandler from DI and calls
+`Handle(request, ct)`. A mediator or command bus would add indirection without
+removing any coupling that matters at this size.
 
 ### Why in-memory TF-IDF, not a real vector store?
 
